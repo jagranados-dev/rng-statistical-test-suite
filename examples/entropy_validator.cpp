@@ -85,5 +85,13 @@ main ( int argc, char** argv )
    print_result ( "Discrete Fourier Transform (Spectral) Test",
       discrete_fourier_transform_test ( test_vector.data (), test_vector.size () ) );
 
+   // 07. Non-Overlapping Template Matching Test
+   print_result ( "Non-Overlapping Template Matching Test",
+      non_overlapping_template_maching_test ( test_vector.data (), test_vector.size () ) );
+
+   // 08. Overlapping Template Matching Test
+   print_result ( "Overlapping Template Matching Test",
+      overlapping_template_maching_test ( test_vector.data (), test_vector.size () ) );
+
    return EXIT_SUCCESS;
 }
