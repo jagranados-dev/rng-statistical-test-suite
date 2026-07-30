@@ -24,7 +24,7 @@ You can build the project using CMake. Follow these standard steps from the root
 
 ```bash
 # Clone the repository
-git clone [https://github.com/jagranados-dev/nist-sts.git](https://github.com/jagranados-dev/nist-sts.git)
+git clone https://github.com/jagranados-dev/nist-sts.git
 cd nist-sts
 
 # Create a build directory
