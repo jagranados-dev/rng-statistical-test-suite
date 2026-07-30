@@ -1,13 +1,12 @@
-/***************************************************
- * Copyright (c) 2025 Jose Alberto Granados
- *
- * MIT License (See LICENSE file for more details)
- ***************************************************/
+/*********************************************************************************
+ * MIT License
+ * Copyright (c) 2026 Jose Alberto Granados
+ *********************************************************************************/
 
 #include <algorithm>
 
 #include <catch2/catch_test_macros.hpp>
-#include <nist/statistical/tests/discrete_fourier_transform.hpp>
+#include <nist_sts/discrete_fourier_transform.hpp>
 
 TEST_CASE("Discrete Fourier Transform (Spectral) Test pass with valid input", "[spectral]")
 {
@@ -31,7 +30,7 @@ TEST_CASE("Discrete Fourier Transform (Spectral) Test pass with valid input", "[
       0xDD, 0xF4, 0x83, 0x69, 0x05
    };
 
-   using namespace nist::statistical::tests;
+   using namespace nist_sts;
    REQUIRE ( discrete_fourier_transform_test ( test_vector.data (), test_vector.size () ) == true);
 }
 
@@ -39,6 +38,6 @@ TEST_CASE("Discrete Fourier Transform (Spectral) Test fails with invalid input",
 {
    const std::vector < uint8_t > test_vector ( 0b10101010, 125 ); // 8 * 125 = 1000 bits (min test size for input)
 
-   using namespace nist::statistical::tests;
+   using namespace nist_sts;
    REQUIRE ( discrete_fourier_transform_test ( test_vector.data (), test_vector.size () ) == false);
 }

@@ -1,7 +1,96 @@
-PROJECT_NAME           = @PROJECT_NAME@
+#-------------------------------------------------
+# Información del proyecto
+#-------------------------------------------------
+
+PROJECT_NAME           = "@PROJECT_NAME@"
+PROJECT_NUMBER         = "@PROJECT_VERSION@"
+
+#-------------------------------------------------
+# Directorios
+#-------------------------------------------------
+
 OUTPUT_DIRECTORY       = @CMAKE_CURRENT_BINARY_DIR@/doxygen
 INPUT                  = @CMAKE_SOURCE_DIR@/lib
 RECURSIVE              = YES
+EXCLUDE                = @CMAKE_SOURCE_DIR@/build
+EXCLUDE_PATTERNS       = */build/* \
+                         */.git/* \
+                         */third_party/* \
+                         */extern/*
+
+#-------------------------------------------------
+# Extracción de documentación
+#-------------------------------------------------
+
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = NO
+EXTRACT_LOCAL_CLASSES  = YES
+
+JAVADOC_AUTOBRIEF      = YES
+
+#-------------------------------------------------
+# Optimización para C++
+#-------------------------------------------------
+
+OPTIMIZE_OUTPUT_FOR_C  = NO
+
+#-------------------------------------------------
+# Salida HTML
+#-------------------------------------------------
+
 GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+
+#-------------------------------------------------
+# Salida LATEX/PDF
+#-------------------------------------------------
+
 GENERATE_LATEX         = NO
+
+#-------------------------------------------------
+# Diagramas (requiere Graphviz)
+#-------------------------------------------------
+
+HAVE_DOT               = @DOXYGEN_HAVE_DOT@
+
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+COLLABORATION_GRAPH    = YES
+INCLUDE_GRAPH          = YES
+INCLUDED_BY_GRAPH      = YES
+
+DOT_IMAGE_FORMAT       = svg
+
+#-------------------------------------------------
+# Ficheros fuente
+#-------------------------------------------------
+
+FILE_PATTERNS          = *.h \
+                         *.hpp \
+                         *.c \
+                         *.cpp
+
+#-------------------------------------------------
+# Advertencias
+#-------------------------------------------------
+
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+
+#-------------------------------------------------
+# Rendimiento
+#-------------------------------------------------
+
 QUIET                  = YES
+
+# Public API quality
+EXTRACT_ALL             = NO
+HIDE_UNDOC_MEMBERS      = NO
+HIDE_UNDOC_CLASSES      = NO
+WARN_AS_ERROR           = FAIL_ON_WARNINGS
+WARN_NO_PARAMDOC        = NO
+FULL_PATH_NAMES         = NO
+STRIP_FROM_PATH         = @CMAKE_SOURCE_DIR@
+USE_MDFILE_AS_MAINPAGE  = @CMAKE_SOURCE_DIR@/README.md
+MARKDOWN_SUPPORT         = YES

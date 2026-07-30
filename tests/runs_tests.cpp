@@ -1,11 +1,10 @@
-/***************************************************
- * Copyright (c) 2025 Jose Alberto Granados
- *
- * MIT License (See LICENSE file for more details)
- ***************************************************/
+/*********************************************************************************
+ * MIT License
+ * Copyright (c) 2026 Jose Alberto Granados
+ *********************************************************************************/
 
 #include <catch2/catch_test_macros.hpp>
-#include <nist/statistical/tests/runs.hpp>
+#include <nist_sts/runs.hpp>
 
 TEST_CASE("Runs Test pass with valid input", "[runs]")
 {
@@ -17,7 +16,7 @@ TEST_CASE("Runs Test pass with valid input", "[runs]")
       0b10000000
    };
 
-   using namespace nist::statistical::tests;
+   using namespace nist_sts;
    REQUIRE ( runs_test ( test_vector.data (), test_vector.size () ) == true);
 }
 
@@ -31,7 +30,7 @@ TEST_CASE("Runs Test fails with invalid input", "[runs]")
       0b10000000
    };
 
-   using namespace nist::statistical::tests;
+   using namespace nist_sts;
    REQUIRE ( runs_test ( test_vector.data (), test_vector.size () ) == false);
 }
 
@@ -47,7 +46,7 @@ TEST_CASE("Longest Run of Ones in a Block Test pass with valid input", "[runs]")
       0b11001100, 0b11100110, 0b11011000, 0b10110010 
    };
 
-   using namespace nist::statistical::tests;
+   using namespace nist_sts;
    REQUIRE ( runs_test ( test_vector.data (), test_vector.size () ) == true);
 }
 
@@ -61,6 +60,6 @@ TEST_CASE("Longest Run of Ones in a Block Test fails with invalid input", "[runs
       0b00000000, 0b00000000, 0b00000000, 0b00000000,
    };
 
-   using namespace nist::statistical::tests;
+   using namespace nist_sts;
    REQUIRE ( runs_test ( test_vector.data (), test_vector.size () ) == false);
 }

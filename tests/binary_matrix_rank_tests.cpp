@@ -1,11 +1,10 @@
-/***************************************************
- * Copyright (c) 2025 Jose Alberto Granados
- *
- * MIT License (See LICENSE file for more details)
- ***************************************************/
+/*********************************************************************************
+ * MIT License
+ * Copyright (c) 2026 Jose Alberto Granados
+ *********************************************************************************/
 
 #include <catch2/catch_test_macros.hpp>
-#include <nist/statistical/tests/binary_matrix_rank.hpp>
+#include <nist_sts/binary_matrix_rank.hpp>
 
 TEST_CASE("Binary Matrix Rank Test fails with invalid input size", "[binary-matrix-rank]")
 {
@@ -17,6 +16,6 @@ TEST_CASE("Binary Matrix Rank Test fails with invalid input size", "[binary-matr
       0b11011010, 0b10100010, 0b11000010, 0b00110100
    };
 
-   using namespace nist::statistical::tests;
+   using namespace nist_sts;
    REQUIRE ( binary_matrix_rank_test ( test_vector.data (), test_vector.size () ) == false);
 }

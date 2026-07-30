@@ -1,11 +1,10 @@
-/***************************************************
- * Copyright (c) 2025 Jose Alberto Granados
- *
- * MIT License (See LICENSE file for more details)
- ***************************************************/
+/*********************************************************************************
+ * MIT License
+ * Copyright (c) 2026 Jose Alberto Granados
+ *********************************************************************************/
 
 #include <catch2/catch_test_macros.hpp>
-#include <nist/statistical/tests/frequency.hpp>
+#include <nist_sts/frequency.hpp>
 
 TEST_CASE("Frequency (Monobit) Test pass with valid input", "[monobit]")
 {
@@ -17,7 +16,7 @@ TEST_CASE("Frequency (Monobit) Test pass with valid input", "[monobit]")
       0b10000000
    };
 
-   using namespace nist::statistical::tests;
+   using namespace nist_sts;
    REQUIRE ( frequency_test ( test_vector.data (), test_vector.size () ) == true);
 }
 
@@ -31,7 +30,7 @@ TEST_CASE("Frequency (Monobit) Test fails with invalid input", "[monobit]")
       0b10000000
    };
 
-   using namespace nist::statistical::tests;
+   using namespace nist_sts;
    REQUIRE ( frequency_test ( test_vector.data (), test_vector.size () ) == false);
 }
 
@@ -47,7 +46,7 @@ TEST_CASE("Frequency Test within a Block pass with valid input", "[frequency-wit
       0b10000000
    };
 
-   using namespace nist::statistical::tests;
+   using namespace nist_sts;
    REQUIRE ( frequency_test_within_a_block ( test_vector.data (), test_vector.size (), 20 ) == true);
 }
 
@@ -61,7 +60,7 @@ TEST_CASE("Frequency Test within a Block fails with invalid input", "[frequency-
       0b10000000
    };
 
-   using namespace nist::statistical::tests;
+   using namespace nist_sts;
    REQUIRE ( frequency_test_within_a_block ( test_vector.data (), test_vector.size (), 20 ) == false);
 }
 
@@ -75,6 +74,6 @@ TEST_CASE("Frequency Test within a Block fails with invalid block size", "[frequ
       0b10000000
    };
 
-   using namespace nist::statistical::tests;
+   using namespace nist_sts;
    REQUIRE ( frequency_test_within_a_block ( test_vector.data (), test_vector.size (), 10 ) == false);
 }

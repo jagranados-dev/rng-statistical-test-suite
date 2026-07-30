@@ -1,45 +1,119 @@
 ##################################################################################
 # MIT License
-#
-# Copyright (c) 2025 Jose Alberto Granados
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+# Copyright (c) 2026 Jose Alberto Granados
 ##################################################################################
 
-# File directories
-file(GLOB_RECURSE LIB_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
-file(GLOB_RECURSE LIB_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp)
-
-# Static library output
-add_library(NIST_STS_STATIC_LIB STATIC ${LIB_SOURCES} ${LIB_HEADERS})
-target_include_directories(NIST_STS_STATIC_LIB
-   PUBLIC
-      ${CMAKE_CURRENT_SOURCE_DIR}/include
+set(NIST_STS_SOURCES
+   src/nist_sts/approximate_entropy.cpp
+   src/nist_sts/binary_matrix_rank.cpp
+   src/nist_sts/cumulative_sums.cpp
+   src/nist_sts/discrete_fourier_transform.cpp
+   src/nist_sts/frequency.cpp
+   src/nist_sts/linear_complexity.cpp
+   src/nist_sts/non_overlapping_template.cpp
+   src/nist_sts/overlapping_template.cpp
+   src/nist_sts/random_excursions.cpp
+   src/nist_sts/runs.cpp
+   src/nist_sts/serial.cpp
+   src/nist_sts/universal.cpp
+   src/nist_sts/utilities.cpp
 )
-set_target_properties(NIST_STS_STATIC_LIB PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
 
-# Shared library output
-if (BUILD_SHARED_LIBS)
-   add_library(NIST_STS_SHARED_LIB SHARED ${LIB_SOURCES} ${LIB_HEADERS})
-   target_include_directories(NIST_STS_SHARED_LIB
-      PUBLIC
-         ${CMAKE_CURRENT_SOURCE_DIR}/include
-   )
-   set_target_properties(NIST_STS_SHARED_LIB PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+add_library(nist_sts_static STATIC ${NIST_STS_SOURCES})
+add_library(nist_sts::static ALIAS nist_sts_static)
+add_library(nist_sts::nist_sts ALIAS nist_sts_static)
+
+set_target_properties(nist_sts_static PROPERTIES
+    OUTPUT_NAME nist_sts
+    EXPORT_NAME static
+    CXX_EXTENSIONS OFF
+    POSITION_INDEPENDENT_CODE ON
+)
+
+target_compile_features(nist_sts_static PUBLIC cxx_std_20)
+target_include_directories(nist_sts_static
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/nist_sts
+)
+
+function(nist_sts_configure_target target)
+    if(NIST_STS_ENABLE_WARNINGS)
+        if(MSVC)
+            target_compile_options(${target} PRIVATE /W4 $<$<BOOL:${NIST_STS_WARNINGS_AS_ERRORS}>:/WX>)
+        else()
+            target_compile_options(${target} PRIVATE
+                -Wall
+                -Wextra
+                -Wpedantic
+                $<$<BOOL:${NIST_STS_WARNINGS_AS_ERRORS}>:-Werror>
+            )
+        endif()
+    endif()
+
+    if(NIST_STS_ENABLE_SANITIZERS)
+        if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+            target_compile_options(${target} PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
+            target_link_options(${target} PRIVATE -fsanitize=address,undefined)
+        else()
+            message(WARNING "NIST_STS_ENABLE_SANITIZERS is supported only by GCC and Clang")
+        endif()
+    endif()
+endfunction()
+
+nist_sts_configure_target(nist_sts_static)
+
+if(NIST_STS_BUILD_SHARED)
+    add_library(nist_sts_shared SHARED ${NIST_STS_SOURCES})
+    add_library(nist_sts::shared ALIAS nist_sts_shared)
+
+    set_target_properties(nist_sts_shared PROPERTIES
+        OUTPUT_NAME nist_sts
+        EXPORT_NAME shared
+        VERSION ${PROJECT_VERSION}
+        SOVERSION ${PROJECT_VERSION_MAJOR}
+        CXX_EXTENSIONS OFF
+        WINDOWS_EXPORT_ALL_SYMBOLS ON
+    )
+
+    target_compile_features(nist_sts_shared PUBLIC cxx_std_20)
+    target_include_directories(nist_sts_shared
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+        PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/nist_sts
+    )
+
+    nist_sts_configure_target(nist_sts_shared)
+endif()
+
+if(NIST_STS_INSTALL)
+    install(
+        TARGETS nist_sts_static
+        EXPORT nistStsTargets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+
+    if(TARGET nist_sts_shared)
+        install(
+            TARGETS nist_sts_shared
+            EXPORT nistStsTargets
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        )
+    endif()
+
+    install(
+        DIRECTORY include/nist_sts
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        FILES_MATCHING PATTERN "*.hpp"
+    )
 endif()

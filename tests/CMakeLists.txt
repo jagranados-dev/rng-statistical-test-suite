@@ -24,29 +24,36 @@
 
 include(FetchContent)
 
-FetchContent_Declare(
-  catch2
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG v3.5.4
+find_package(Catch2 3.15.2 QUIET)
+
+if(NOT Catch2_FOUND)
+    FetchContent_Declare(
+        catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG v3.15.2
+        GIT_SHALLOW TRUE
+    )
+    FetchContent_MakeAvailable(catch2)
+endif()
+
+set(NIST_STS_TEST_SOURCES
+    approximate_entropy_tests.cpp
+    binary_matrix_rank_tests.cpp
+    cumulative_sums_tests.cpp
+    discrete_fourier_transform.cpp
+    frequency_tests.cpp
+    linear_complexity_tests.cpp
+    non_overlapping_template_tests.cpp
+    overlapping_template_tests.cpp
+    random_excursions_tests.cpp
+    runs_tests.cpp
+    serial_tests.cpp
+    universal_tests.cpp
 )
-FetchContent_MakeAvailable(catch2)
 
-file(GLOB_RECURSE TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+add_executable(nist_sts_tests ${NIST_STS_TEST_SOURCES})
+target_link_libraries(nist_sts_tests PRIVATE Catch2::Catch2WithMain nist_sts::static)
+target_compile_features(nist_sts_tests PRIVATE cxx_std_20)
 
-add_executable(${PROJECT_NAME}_tests ${TEST_SOURCES})
-
-target_link_libraries(${PROJECT_NAME}_tests
-    PRIVATE
-        Catch2::Catch2WithMain
-        NIST_STS_STATIC_LIB
-)
-
-# Heredar includes de la lib automáticamente
-target_include_directories(${PROJECT_NAME}_tests
-    PRIVATE
-        ${CMAKE_SOURCE_DIR}/lib/include
-)
-
-include(CTest)
 include(Catch)
-catch_discover_tests(${PROJECT_NAME}_tests)
+catch_discover_tests(nist_sts_tests)

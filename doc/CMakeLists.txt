@@ -1,37 +1,27 @@
 ##################################################################################
 # MIT License
-#
-# Copyright (c) 2025 Jose Alberto Granados
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+# Copyright (c) 2026 Jose Alberto Granados
 ##################################################################################
 
 find_package(Doxygen REQUIRED)
 
-set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
-set(DOXYFILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+find_program(DOT_EXECUTABLE dot)
+if(DOT_EXECUTABLE)
+    set(DOXYGEN_HAVE_DOT YES)
+else()
+    set(DOXYGEN_HAVE_DOT NO)
+    message(STATUS "Graphviz was not found; Doxygen diagrams are disabled")
+endif()
 
-configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
+set(DOXYFILE_IN "${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in")
+set(DOXYFILE_OUT "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile")
+configure_file("${DOXYFILE_IN}" "${DOXYFILE_OUT}" @ONLY)
 
-add_custom_target(doc_doxygen
-    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMENT "Generating Doxygen documentation..."
+add_custom_target(nist_sts_docs
+    COMMAND "${DOXYGEN_EXECUTABLE}" "${DOXYFILE_OUT}"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    COMMENT "Generating ASN.1 API documentation"
     VERBATIM
 )
+
+add_custom_target(doc_doxygen DEPENDS nist_sts_docs)

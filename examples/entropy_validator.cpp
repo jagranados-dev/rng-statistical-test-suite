@@ -4,7 +4,7 @@
  * MIT License (See LICENSE file for more details)
  ***************************************************/
 
-#include <nist/statistical/tests.hpp>
+#include <nist_sts/tests.hpp>
 
 #include <cmath>
 #include <iostream>
@@ -53,7 +53,7 @@ main ( int argc, char** argv )
                 "file: " << argv [ 1 ] <<
                 "\n---------------------\n";
    
-   using namespace nist::statistical::tests;
+   using namespace nist_sts;
 
    // Input test vector
    auto test_vector = read_binary_file ( argv [ 1 ] );

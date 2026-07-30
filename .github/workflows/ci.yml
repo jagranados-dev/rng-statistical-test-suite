@@ -1,0 +1,57 @@
+# MIT License
+# Copyright (c) 2026 Jose Alberto Granados
+
+name: CI - Build and Test
+
+# Trigger workflow on pushes and pull requests to main/master, as well as version tags
+on:
+  push:
+    branches: ["main", "develop"]
+    tags: ["v*.*.*"]
+  pull_request:
+    branches: ["main", "develop"]
+
+# Cancel in-progress runs for the same pull request or branch to save CI minutes
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.os }} (${{ matrix.build_type }})
+    runs-on: ${{ matrix.os }}
+
+    # Cross-platform matrix to validate C++20 portability across GCC, MSVC, and Clang
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build_type: [Release, Debug]
+
+    steps:
+      # Step 1: Checkout the repository source code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Configure the project using CMake
+      - name: Configure
+        run: >
+          cmake -B ${{ github.workspace }}/build
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DASN1PP_BUILD_TESTS=ON
+          -DASN1PP_BUILD_EXAMPLES=ON
+
+      # Step 3: Build the core PPrary and the test binaries
+      - name: Build
+        run: >
+          cmake --build ${{ github.workspace }}/build
+          --config ${{ matrix.build_type }}
+          --parallel
+
+      # Step 4: Execute Catch2 test suite via CTest with detailed output on failure
+      - name: Test
+        working-directory: ${{ github.workspace }}/build
+        run: >
+          ctest --build-config ${{ matrix.build_type }}
+          --output-on-failure
+          --parallel
